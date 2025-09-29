@@ -1,7 +1,7 @@
 package com.ordenacao.algoritimos;
 
 public class Merge {
-  static void mergeSort(int[] arr){
+  public static void mergeSort(int[] arr){
     int lenght = arr.length;    
     if (lenght <= 1) return;
 
