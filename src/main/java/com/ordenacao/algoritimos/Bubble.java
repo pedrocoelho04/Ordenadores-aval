@@ -1,7 +1,10 @@
 package com.ordenacao.algoritimos;
 
-public class Bubble {
-  public static void sort(int[] array) {
+import com.ordenacao.entidadesAuxiliares.AlgoritmoDeOrdenacao;
+
+public class Bubble implements AlgoritmoDeOrdenacao{
+
+  public void sort(int[] array) {
     int length = array.length;
     boolean trocou;
 

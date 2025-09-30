@@ -1,7 +1,9 @@
 package com.ordenacao.algoritimos;
 
-public class Merge {
-  static void mergeSort(int[] arr){
+import com.ordenacao.entidadesAuxiliares.AlgoritmoDeOrdenacao;
+
+public class Merge implements AlgoritmoDeOrdenacao {
+  public void sort(int[] arr){
     int lenght = arr.length;    
     if (lenght <= 1) return;
 
@@ -20,8 +22,8 @@ public class Merge {
       }
     }
 
-    mergeSort(esqArr);
-    mergeSort(dirArr);
+    sort(esqArr);
+    sort(dirArr);
 
     merge(esqArr, dirArr, arr);
   }

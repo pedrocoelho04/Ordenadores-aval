@@ -1,7 +1,9 @@
 package com.ordenacao.algoritimos;
 
-public class Heap {
-  private static void heapify(int arr[], int n, int i){
+import com.ordenacao.entidadesAuxiliares.AlgoritmoDeOrdenacao;
+
+public class Heap implements AlgoritmoDeOrdenacao {
+  private void heapify(int arr[], int n, int i){
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
@@ -23,7 +25,7 @@ public class Heap {
     }
   }
 
-  public static void sort(int arr[]){
+  public void sort(int arr[]){
     int n = arr.length;
 
     for(int i = n / 2 - 1; i >= 0; i--){
