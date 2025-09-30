@@ -18,6 +18,7 @@ import com.ordenacao.operations.CalculoTempo;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,20 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class SortReportPDF {
+
+    private static void configurarTabelaPadrao(PdfPTable table) {
+        try {
+            table.setWidthPercentage(100); // Tabela ocupa 100% da largura
+            table.setSpacingBefore(10f);   // Espaço antes da tabela
+            table.setSpacingAfter(10f);    // Espaço depois da tabela
+            
+            // Opcional: definir larguras das colunas
+            float[] columnWidths = new float[]{10f, 15f, 15f, 15f, 15f, 15f, 15f};
+            table.setWidths(columnWidths);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Document documentoAnalise(SortTime[] sortTime, int lenght, Image chartImage) {
 
@@ -61,6 +76,8 @@ public class SortReportPDF {
 
             PdfPTable table = new PdfPTable(7);
 
+            configurarTabelaPadrao(table);
+
             // ---------- Tabela de Resultados ----------
             table.addCell("n");
             table.addCell("BubbleSort Tempo (ns)");
@@ -85,11 +102,11 @@ public class SortReportPDF {
             System.out.println("Relatório PDF gerado com sucesso: Relatorio_Sorts.pdf");
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
+        } catch (DocumentException | IOException e) {
+            System.err.println("Erro ao gerar relatório PDF: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Falha ao gerar relatório", e);
         }
 
         return null;
@@ -143,11 +160,12 @@ public class SortReportPDF {
             for (String j : groups) {
                 bubbleSeries = new XYSeries("BubbleSort");
                 heapSeries = new XYSeries("HeapSort");
-                insertionSeries = new XYSeries("InsertionSeries");
+                insertionSeries = new XYSeries("InsertionSort");
                 mergeSeries = new XYSeries("MergeSort");
                 quickSeries = new XYSeries("QuickSort");
                 selectionSeries = new XYSeries("SelectionSort");
                 table = new PdfPTable(7);
+                configurarTabelaPadrao(table);
                 document.add(new Paragraph(" "));
 
                 document.add(new Paragraph(j));
@@ -201,68 +219,26 @@ public class SortReportPDF {
 
                     int[] arr2 = arr1.clone();
 
-                    // BubbleSort
-                    // runtime.gc();
-                    // long start = System.nanoTime();
-                    // new Bubble().sort(arr2);
-                    // long end = System.nanoTime();
-                    // bubbleSeries.add(n, (end - start) / 1e6); // ms
-                    // long bubbleTime = (end - start); // nanossegundos
                     long bubbleTime = CalculoTempo.calcularTempo(runtime, arr2, bubbleSeries, n, new Bubble());
 
                     arr2 = arr1.clone();
 
-                    // MergeSort
-                    // runtime.gc();
-                    // start = System.nanoTime();
-                    // new Merge().sort(arr2);
-                    // end = System.nanoTime();
-                    // mergeSeries.add(n, (end - start) / 1e6); // ms
-                    // long mergeTime = (end - start); // nanossegundos
                     long mergeTime = CalculoTempo.calcularTempo(runtime, arr2, mergeSeries, n, new Merge());
 
                     arr2 = arr1.clone();
 
-                    // Heapsort
-                    // runtime.gc();
-                    // start = System.nanoTime();
-                    // new Heap().sort(arr2);
-                    // end = System.nanoTime();
-                    // heapSeries.add(n, (end - start) / 1e6); // ms
-                    // long heapTime = (end - start); // nanossegundos
                     long heapTime = CalculoTempo.calcularTempo(runtime, arr2, heapSeries, n, new Heap());
 
                     arr2 = arr1.clone();
 
-                    // InsertionSort
-                    // runtime.gc();
-                    // start = System.nanoTime();
-                    // new Insertion().sort(arr2);
-                    // end = System.nanoTime();
-                    // insertionSeries.add(n, (end - start) / 1e6); // ms
-                    // long insertionTime = (end - start); // nanossegundos
                     long insertionTime = CalculoTempo.calcularTempo(runtime, arr2, insertionSeries, n, new Insertion());
 
                     arr2 = arr1.clone();
 
-                    // QuickSort
-                    // runtime.gc();
-                    // start = System.nanoTime();
-                    // new Quick().sort(arr2);
-                    // end = System.nanoTime();
-                    // quickSeries.add(n, (end - start) / 1e6); // ms
-                    // long quickTime = (end - start); // nanossegundos
                     long quickTime = CalculoTempo.calcularTempo(runtime, arr2, quickSeries, n, new Quick());
 
                     arr2 = arr1.clone();
 
-                    // SelectionSort
-                    // runtime.gc();
-                    // start = System.nanoTime();
-                    // new Selection().sort(arr2);
-                    // end = System.nanoTime();
-                    // selectionSeries.add(n, (end - start) / 1e6); // ms
-                    // long selectionTime = (end - start); // nanossegundos
                     long selectionTime = CalculoTempo.calcularTempo(runtime, arr2, selectionSeries, n, new Selection());
 
                     // Adiciona na tabela
@@ -299,14 +275,15 @@ public class SortReportPDF {
             // ---------- Conclusão ----------
             document.add(new Paragraph(" "));
             document.add(new Paragraph("Conclusão:", titleFont));
-            document.add(new Paragraph(
-                    "O BubbleSort cresce quadraticamente em tempo, tornando-se impraticável para grandes valores de n, "
-                            +
-                            "mas consome pouca memória. Já o MergeSort é significativamente mais rápido em grandes entradas, "
-                            +
-                            "embora utilize memória auxiliar proporcional ao tamanho do vetor."));
+            document.add(new Paragraph("Qual algoritmo apresenta melhor desempenho com dados ordenados de forma crescente?"));
+            document.add(new Paragraph("Em uma serie de dados crescente com valores repetidos, de inicio ao Fim, o InsertionSort teve mais sucesso que os outros algoritmos em menor quantidade de tempo. Porem sem repetição desses dados, o BubbleSort teve mais sucesso em menor tempo."));
+            document.add(new Paragraph("Qual é o mais eficiente com dados ordenados de forma decrescente?"));
+            document.add(new Paragraph("Em uma serie de dados decrescente, os dois algoritmos que mais destacaram foi o MergeSort e Quicksort. Sendo o MergeSort o mais estável nos dados com repetição e sem repetição."));
+            document.add(new Paragraph("Qual algoritmo é mais estável em relação ao tempo de execução, independentemente da organização dos dados?"));
+            document.add(new Paragraph("O tempo de execução do HeapSort e do MergeSort permanece consistentemente baixo e com um crescimento suave, sem os picos extremos vistos em outros algoritmos."));
 
             document.close();
+            
             System.out.println("Relatório PDF gerado com sucesso: Relatorio_Sorts.pdf");
 
         } catch (Exception e) {
