@@ -1,7 +1,9 @@
 package com.ordenacao.algoritimos;
 
-public class Insertion {
-  public static void sort(int[] array) {
+import com.ordenacao.entidadesAuxiliares.AlgoritmoDeOrdenacao;
+
+public class Insertion implements AlgoritmoDeOrdenacao {
+  public void sort(int[] array) {
     for (int i = 1; i < array.length; i++) {
       int key = array[i];
       int j = i - 1;

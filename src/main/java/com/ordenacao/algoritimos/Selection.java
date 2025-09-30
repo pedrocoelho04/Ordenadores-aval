@@ -1,8 +1,10 @@
 package com.ordenacao.algoritimos;
 
-public class Selection {
+import com.ordenacao.entidadesAuxiliares.AlgoritmoDeOrdenacao;
 
-  static void selectionSort(int[] arr){
+public class Selection implements AlgoritmoDeOrdenacao {
+
+  public void sort(int[] arr){
       int n = arr.length;
       for (int i = 0; i < n - 1; i++) {
         int min_idx = i;
